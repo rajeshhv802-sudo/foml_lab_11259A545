@@ -1,0 +1,33 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import accuracy_score
+
+# Load dataset
+data = pd.read_csv("heart.csv")
+
+# Predict heart disease
+X = data.drop("HeartDisease", axis=1)
+y = data["HeartDisease"]
+
+# Convert text columns into numeric columns
+X = pd.get_dummies(X, drop_first=True)
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=1, stratify=y
+)
+
+# Train model
+model = GradientBoostingClassifier(random_state=1)
+model.fit(X_train, y_train)
+
+# Test accuracy
+y_pred = model.predict(X_test)
+print("Accuracy:", round(accuracy_score(y_test, y_pred), 3))
+
+# Predict for a test patient
+new_patient = X_test.iloc[[0]]
+result = model.predict(new_patient)[0]
+
+print("Heart disease? (1=yes, 0=no):", result)
